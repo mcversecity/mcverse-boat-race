@@ -1,0 +1,22 @@
+name: McvBoatRace
+version: '${project.version}'
+main: mcverse.boatrace.BoatRacePlugin
+api-version: '26.2'
+softdepend: [WorldGuard]
+authors: [mcverse]
+description: Repeatable ice boat races
+
+commands:
+  mcvboatrace:
+    description: Create a boat-race arena and run a race
+    usage: /mcvboatrace help
+
+permissions:
+  mcvboatrace.join:
+    description: Join and leave a boat race
+    default: true
+  mcvboatrace.admin:
+    description: Create arenas and control races
+    default: op
+    children:
+      mcvboatrace.join: true

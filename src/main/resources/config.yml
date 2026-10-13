@@ -1,0 +1,17 @@
+# Defaults copied onto an arena when it is created.
+# Change an existing arena in game with setlobby, setminplayers, and setmaxtime.
+lobby-seconds: 20
+full-lobby-seconds: 5
+min-players: 1
+max-race-seconds: 300
+results-seconds: 5
+off-track-grace-ticks: 10
+recovery-cooldown-ticks: 20
+trail-samples: 40
+trail-interval-ticks: 5
+boat-type: OAK
+ice-blocks:
+  - ICE
+  - PACKED_ICE
+  - BLUE_ICE
+  - FROSTED_ICE
