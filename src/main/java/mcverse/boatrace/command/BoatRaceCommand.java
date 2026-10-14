@@ -31,7 +31,7 @@ public final class BoatRaceCommand implements CommandExecutor, TabCompleter {
             "setspectator", "setspectatearea", "settrack", "setfinish",
             "addcheckpoint", "removecheckpoint", "clearcheckpoints", "listcheckpoints",
             "setslot", "delslot", "listslots",
-            "setminplayers", "setlobby", "setmaxtime",
+            "setminplayers", "setlobby", "setmaxtime", "setlaps",
             "start", "stop", "reload");
 
     private final BoatRacePlugin plugin;
@@ -75,6 +75,7 @@ public final class BoatRaceCommand implements CommandExecutor, TabCompleter {
             case "setminplayers" -> setNumber(sender, args, 1, Arena.MAX_SLOTS, "Min players", (arena, value) -> plugin.arenas().setMinPlayers(arena, value));
             case "setlobby" -> setNumber(sender, args, 5, 300, "Lobby seconds", (arena, value) -> plugin.arenas().setLobbySeconds(arena, value));
             case "setmaxtime" -> setNumber(sender, args, 30, 3600, "Max race seconds", (arena, value) -> plugin.arenas().setMaxRaceSeconds(arena, value));
+            case "setlaps" -> setNumber(sender, args, 1, Arena.MAX_LAPS, "Laps", (arena, value) -> plugin.arenas().setLaps(arena, value));
             case "start" -> start(sender, args);
             case "stop" -> stop(sender, args);
             case "reload" -> reload(sender);
@@ -146,6 +147,7 @@ public final class BoatRaceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Messages.text("/mcvboatrace setminplayers <n>"));
         sender.sendMessage(Messages.text("/mcvboatrace setlobby <seconds>"));
         sender.sendMessage(Messages.text("/mcvboatrace setmaxtime <seconds>"));
+        sender.sendMessage(Messages.text("/mcvboatrace setlaps <n>"));
         sender.sendMessage(Messages.text("/mcvboatrace start [arena] - skip the lobby"));
         sender.sendMessage(Messages.text("/mcvboatrace stop [arena]"));
         sender.sendMessage(Messages.text("/mcvboatrace reload"));
@@ -245,7 +247,8 @@ public final class BoatRaceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(Messages.text("Checkpoints: " + arena.checkpoints().size()));
         sender.sendMessage(Messages.text("Start slots: " + arena.slotCount()));
         sender.sendMessage(Messages.text("Min players " + arena.minPlayers()
-                + ", lobby " + arena.lobbySeconds() + "s, max time " + arena.maxRaceSeconds() + "s"));
+                + ", lobby " + arena.lobbySeconds() + "s, max time " + arena.maxRaceSeconds() + "s"
+                + ", laps " + arena.laps()));
         if (arena.spectateArea() != null) {
             sender.sendMessage(Messages.text("WorldGuard " + WorldGuardArenas.id(arena.name(), "spectate")));
         }

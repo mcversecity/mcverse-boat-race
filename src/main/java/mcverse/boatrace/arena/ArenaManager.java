@@ -32,12 +32,12 @@ public final class ArenaManager {
 
     public void load() {
         arenas.clear();
-        arenas.putAll(store.load(config.minPlayers(), config.lobbySeconds(), config.maxRaceSeconds()));
+        arenas.putAll(store.load(config.minPlayers(), config.lobbySeconds(), config.maxRaceSeconds(), config.laps()));
     }
 
     public List<String> reloadIdle(Predicate<String> busy) {
         List<String> skipped = new ArrayList<>();
-        Map<String, Arena> loaded = store.load(config.minPlayers(), config.lobbySeconds(), config.maxRaceSeconds());
+        Map<String, Arena> loaded = store.load(config.minPlayers(), config.lobbySeconds(), config.maxRaceSeconds(), config.laps());
         arenas.keySet().removeIf(name -> !loaded.containsKey(name) && !busy.test(name));
         loaded.forEach((name, arena) -> {
             if (busy.test(name)) {
@@ -66,7 +66,7 @@ public final class ArenaManager {
 
     public Arena create(String name) {
         String id = name.toLowerCase(Locale.ROOT);
-        Arena arena = new Arena(id, config.minPlayers(), config.lobbySeconds(), config.maxRaceSeconds());
+        Arena arena = new Arena(id, config.minPlayers(), config.lobbySeconds(), config.maxRaceSeconds(), config.laps());
         arenas.put(id, arena);
         store.save(arenas.values());
         return arena;
@@ -176,6 +176,11 @@ public final class ArenaManager {
 
     public void setMaxRaceSeconds(Arena arena, int seconds) {
         arena.setMaxRaceSeconds(seconds);
+        save();
+    }
+
+    public void setLaps(Arena arena, int laps) {
+        arena.setLaps(laps);
         save();
     }
 

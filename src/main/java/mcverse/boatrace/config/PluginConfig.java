@@ -15,6 +15,7 @@ public final class PluginConfig {
     private int fullLobbySeconds;
     private int minPlayers;
     private int maxRaceSeconds;
+    private int laps;
     private int resultsSeconds;
     private int offTrackGraceTicks;
     private int recoveryCooldownTicks;
@@ -34,6 +35,7 @@ public final class PluginConfig {
         fullLobbySeconds = positive(plugin.getConfig().getInt("full-lobby-seconds", 5), 5);
         minPlayers = positive(plugin.getConfig().getInt("min-players", 1), 1);
         maxRaceSeconds = positive(plugin.getConfig().getInt("max-race-seconds", 300), 300);
+        laps = positive(plugin.getConfig().getInt("laps", 1), 1);
         resultsSeconds = positive(plugin.getConfig().getInt("results-seconds", 5), 5);
         offTrackGraceTicks = positive(plugin.getConfig().getInt("off-track-grace-ticks", 10), 10);
         recoveryCooldownTicks = positive(plugin.getConfig().getInt("recovery-cooldown-ticks", 20), 20);
@@ -95,6 +97,10 @@ public final class PluginConfig {
 
     public int maxRaceSeconds() {
         return maxRaceSeconds;
+    }
+
+    public int laps() {
+        return laps;
     }
 
     public int resultsSeconds() {

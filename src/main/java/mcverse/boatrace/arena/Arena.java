@@ -8,6 +8,7 @@ import java.util.TreeMap;
 public final class Arena {
     public static final int MAX_SLOTS = 32;
     public static final int MAX_CHECKPOINTS = 64;
+    public static final int MAX_LAPS = 64;
 
     private final String name;
     private String world;
@@ -20,12 +21,14 @@ public final class Arena {
     private int minPlayers;
     private int lobbySeconds;
     private int maxRaceSeconds;
+    private int laps;
 
-    public Arena(String name, int minPlayers, int lobbySeconds, int maxRaceSeconds) {
+    public Arena(String name, int minPlayers, int lobbySeconds, int maxRaceSeconds, int laps) {
         this.name = name;
         this.minPlayers = minPlayers;
         this.lobbySeconds = lobbySeconds;
         this.maxRaceSeconds = maxRaceSeconds;
+        this.laps = laps;
     }
 
     public String name() {
@@ -122,6 +125,14 @@ public final class Arena {
 
     public void setMaxRaceSeconds(int maxRaceSeconds) {
         this.maxRaceSeconds = maxRaceSeconds;
+    }
+
+    public int laps() {
+        return laps;
+    }
+
+    public void setLaps(int laps) {
+        this.laps = laps;
     }
 
     public List<String> missing() {

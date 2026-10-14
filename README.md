@@ -16,7 +16,7 @@ Build the plugin:
 mvn package
 ```
 
-Copy `target/mcverse-boat-race-1.0.0.jar` into the server `plugins` folder and restart. Arenas are stored in `plugins/McvBoatRace/arenas.yml`. New arenas copy their lobby size, minimum players, and time limit from `plugins/McvBoatRace/config.yml`.
+Copy `target/mcverse-boat-race-1.0.0.jar` into the server `plugins` folder and restart. Arenas are stored in `plugins/McvBoatRace/arenas.yml`. New arenas copy their lobby size, minimum players, time limit, and lap count from `plugins/McvBoatRace/config.yml`.
 
 ## Set up an arena
 
@@ -44,7 +44,7 @@ Players need `mcvboatrace.join`, which is granted to everyone by default.
 - Join from inside the spectator area with `/mcvboatrace join [arena]`, or right-click a sign whose first line is `[mcvboatrace]`. The second line can name the arena.
 - Once enough players are queued, a lobby countdown starts. The default wait is 20 seconds. Filling every start slot shortens it to 5 seconds. Extra players wait for the next race.
 - Racers are placed in one oak boat each, in join order, and held on the start line for **3**, **2**, **1**, **START**. The titles and boss bar are also shown to anyone standing in the spectator area.
-- Checkpoints count only in order. The finish line counts after the last checkpoint. Finishers are sent back to the spectator spawn and their boat is removed.
+- Checkpoints count only in order. The finish line counts after the last checkpoint of the current lap. That crossing completes the lap. Racers pass the checkpoints again for every remaining lap, and the last crossing ends the race. One lap is the default. Finishers are sent back to the spectator spawn and their boat is removed.
 - Anyone still racing when the time limit ends (5 minutes by default) is marked DNF.
 - `/mcvboatrace start [arena]` skips the lobby if someone is already queued. `/mcvboatrace stop [arena]` ends the race and removes the boats. `/mcvboatrace leave` drops you from the queue, or out of a race that has already started.
 
@@ -81,6 +81,7 @@ Each racer has one boat for the whole race. The boat is removed when they finish
 | `/mcvboatrace setminplayers <n>` | Set how many players the lobby waits for |
 | `/mcvboatrace setlobby <seconds>` | Set the lobby wait, from 5 to 300 seconds |
 | `/mcvboatrace setmaxtime <seconds>` | Set the race time limit, from 30 to 3600 seconds |
+| `/mcvboatrace setlaps <n>` | Set how many laps the finish line takes, from 1 to 64 |
 | `/mcvboatrace start [arena]` | Start the countdown immediately |
 | `/mcvboatrace stop [arena]` | Stop the race and remove its boats |
 | `/mcvboatrace reload` | Reload config and arenas that are not currently racing |
@@ -89,7 +90,7 @@ Stop a race before changing its course. Arena names are 1 to 24 characters and m
 
 ## Config
 
-`config.yml` supplies the defaults copied onto an arena at creation. Change an existing arena with `setlobby`, `setminplayers`, and `setmaxtime`.
+`config.yml` supplies the defaults copied onto an arena at creation. Change an existing arena with `setlobby`, `setminplayers`, `setmaxtime`, and `setlaps`.
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
@@ -97,6 +98,7 @@ Stop a race before changing its course. Arena names are 1 to 24 characters and m
 | `full-lobby-seconds` | 5 | Wait used when every start slot is filled |
 | `min-players` | 1 | Players required before the lobby counts down |
 | `max-race-seconds` | 300 | Time before remaining racers are DNF |
+| `laps` | 1 | Laps copied onto a new arena. The finish line closes each lap |
 | `results-seconds` | 5 | How long results stay up before the next queue |
 | `off-track-grace-ticks` | 10 | Ticks off the ice before a boat is moved back |
 | `recovery-cooldown-ticks` | 20 | Ticks after a recovery before it can happen again |

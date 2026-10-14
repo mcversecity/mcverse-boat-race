@@ -21,12 +21,12 @@ public final class Racer {
     private boolean finished;
     private int place;
 
-    public Racer(UUID playerId, String name, int slotNumber, Pose start, int checkpoints, int trailSamples, int graceTicks) {
+    public Racer(UUID playerId, String name, int slotNumber, Pose start, int checkpoints, int laps, int trailSamples, int graceTicks) {
         this.playerId = playerId;
         this.name = name;
         this.slotNumber = slotNumber;
         this.start = start;
-        this.progress = new Progress(checkpoints);
+        this.progress = new Progress(checkpoints, laps);
         this.trail = new Trail(trailSamples);
         this.grace = new OffTrackGrace(graceTicks);
         this.trail.add(Sample.fromPose(start));

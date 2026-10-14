@@ -258,14 +258,37 @@ public final class RaceSession {
             }
             Player player = Bukkit.getPlayer(racer.playerId());
             if (player != null) {
-                String message = "Checkpoint " + (index + 1) + "/" + checkpoints.size();
+                String message = checkpointMessage(racer, index + 1, checkpoints.size());
                 player.sendMessage(Messages.ok(message));
                 Titles.action(player, message);
             }
         }
-        if (arena.finish() != null && ArenaManager.contains(arena.finish(), to) && racer.progress().canFinish()) {
-            finish(racer);
+        if (arena.finish() != null) {
+            switch (racer.progress().crossLine(ArenaManager.contains(arena.finish(), to))) {
+                case LAP -> announceLap(racer);
+                case FINISHED -> finish(racer);
+                case NONE -> {
+                }
+            }
         }
+    }
+
+    private static String checkpointMessage(Racer racer, int number, int total) {
+        String checkpoint = "checkpoint " + number + "/" + total;
+        if (racer.progress().laps() == 1) {
+            return "Checkpoint " + number + "/" + total;
+        }
+        return "Lap " + racer.progress().currentLap() + "/" + racer.progress().laps() + ", " + checkpoint;
+    }
+
+    private void announceLap(Racer racer) {
+        Player player = Bukkit.getPlayer(racer.playerId());
+        if (player == null) {
+            return;
+        }
+        String message = "Lap " + racer.progress().completedLaps() + "/" + racer.progress().laps();
+        player.sendMessage(Messages.ok(message));
+        Titles.action(player, message);
     }
 
     public Location onDeath(Player player) {
@@ -462,6 +485,7 @@ public final class RaceSession {
                         slotNumber,
                         pose,
                         arena.checkpoints().size(),
+                        arena.laps(),
                         config.trailSamples(),
                         config.offTrackGraceTicks());
                 racers.put(playerId, racer);
@@ -729,13 +753,19 @@ public final class RaceSession {
             }
             case RACING -> {
                 bar.setColor(BarColor.GREEN);
-                int best = 0;
+                Progress leader = null;
                 for (Racer racer : racers.values()) {
-                    best = Math.max(best, racer.progress().nextIndex());
+                    Progress progress = racer.progress();
+                    if (leader == null || progress.score() > leader.score()) {
+                        leader = progress;
+                    }
                 }
-                int total = Math.max(1, arena.checkpoints().size());
-                bar.setTitle("Racing");
-                bar.setProgress(Math.max(0.0, Math.min(1.0, best / (double) total)));
+                if (leader == null || leader.laps() == 1) {
+                    bar.setTitle("Racing");
+                } else {
+                    bar.setTitle("Lap " + leader.currentLap() + "/" + leader.laps());
+                }
+                bar.setProgress(leader == null ? 0.0 : Math.max(0.0, Math.min(1.0, leader.fraction())));
             }
             case RESULTS -> {
                 bar.setColor(BarColor.WHITE);

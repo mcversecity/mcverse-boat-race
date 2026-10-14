@@ -19,7 +19,7 @@ public final class ArenaStore {
         this.file = new File(plugin.getDataFolder(), "arenas.yml");
     }
 
-    public Map<String, Arena> load(int defaultMinPlayers, int defaultLobby, int defaultMaxTime) {
+    public Map<String, Arena> load(int defaultMinPlayers, int defaultLobby, int defaultMaxTime, int defaultLaps) {
         Map<String, Arena> arenas = new LinkedHashMap<>();
         if (!file.exists()) {
             return arenas;
@@ -34,11 +34,16 @@ public final class ArenaStore {
             if (section == null) {
                 continue;
             }
+            int laps = section.getInt("laps", defaultLaps);
+            if (laps < 1) {
+                laps = defaultLaps > 0 ? defaultLaps : 1;
+            }
             Arena arena = new Arena(
                     name,
                     section.getInt("min-players", defaultMinPlayers),
                     section.getInt("lobby-seconds", defaultLobby),
-                    section.getInt("max-race-seconds", defaultMaxTime));
+                    section.getInt("max-race-seconds", defaultMaxTime),
+                    laps);
             String world = section.getString("world");
             arena.setWorld(world);
             arena.setSpectatorSpawn(readPose(section.getConfigurationSection("spectator-spawn")));
@@ -79,6 +84,7 @@ public final class ArenaStore {
             yaml.set(path + ".min-players", arena.minPlayers());
             yaml.set(path + ".lobby-seconds", arena.lobbySeconds());
             yaml.set(path + ".max-race-seconds", arena.maxRaceSeconds());
+            yaml.set(path + ".laps", arena.laps());
             writePose(yaml, path + ".spectator-spawn", arena.spectatorSpawn());
             writeCuboid(yaml, path + ".spectate-area", arena.spectateArea());
             writeCuboid(yaml, path + ".track", arena.track());
