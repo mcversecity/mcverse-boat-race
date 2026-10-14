@@ -506,7 +506,9 @@ public final class BoatRaceCommand implements CommandExecutor, TabCompleter {
             return;
         }
         if (!plugin.races().forceStart(arena)) {
-            sender.sendMessage(Messages.error("Nobody is queued. Players join from the spectator area."));
+            sender.sendMessage(plugin.races().hasWaitingPlayers(arena)
+                    ? Messages.error("The race could not start.")
+                    : Messages.error("Nobody is queued. Players join from the spectator area."));
             return;
         }
         sender.sendMessage(Messages.ok("Started the countdown in " + arena.name() + "."));

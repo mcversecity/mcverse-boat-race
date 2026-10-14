@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,16 +70,33 @@ public final class BoatTracker {
         if (existing != null) {
             return existing;
         }
+        World world = location.getWorld();
+        if (world == null) {
+            throw new IllegalStateException("Race boat location has no world");
+        }
         Location spawnAt = location.clone();
-        Boat boat = location.getWorld().spawn(spawnAt, Boat.class, created -> {
-            created.setBoatType(type);
-            created.setInvulnerable(true);
-            created.getPersistentDataContainer().set(managedKey, PersistentDataType.BYTE, (byte) 1);
-        });
+        EntityType entityType = entityType(type);
+        Entity spawned = world.spawnEntity(spawnAt, entityType);
+        if (!(spawned instanceof Boat boat)) {
+            if (spawned != null) {
+                spawned.remove();
+            }
+            throw new IllegalStateException("Could not spawn " + entityType);
+        }
+        boat.setInvulnerable(true);
+        boat.getPersistentDataContainer().set(managedKey, PersistentDataType.BYTE, (byte) 1);
         boat.setRotation(spawnAt.getYaw(), 0f);
         boat.setVelocity(new Vector());
         racer.setBoatId(boat.getUniqueId());
         return boat;
+    }
+
+    private static EntityType entityType(Boat.Type type) {
+        try {
+            return EntityType.valueOf(type.name() + "_BOAT");
+        } catch (IllegalArgumentException ex) {
+            return EntityType.OAK_BOAT;
+        }
     }
 
     public void ensurePassenger(Racer racer, Player player, Location fallback, Boat.Type type) {

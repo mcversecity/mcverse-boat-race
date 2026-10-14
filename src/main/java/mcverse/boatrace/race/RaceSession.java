@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public final class RaceSession {
     private final Arena arena;
@@ -171,6 +172,10 @@ public final class RaceSession {
         }
         beginCountdown();
         return state == RaceState.COUNTDOWN;
+    }
+
+    public boolean hasWaitingPlayers() {
+        return !queue.isEmpty();
     }
 
     public void stop(String reason) {
@@ -430,7 +435,6 @@ public final class RaceSession {
             boats.removeManagedInside(world, arena.track());
         }
         List<UUID> starting = new ArrayList<>(queue);
-        queue.clear();
         List<Integer> slotNumbers = new ArrayList<>(arena.slots().keySet());
         for (int index = 0; index < starting.size() && index < slotNumbers.size(); index++) {
             Pose pose = arena.slots().get(slotNumbers.get(index));
@@ -438,28 +442,43 @@ public final class RaceSession {
         }
         racers.clear();
         placeCounter = 0;
+        List<UUID> overflow = new ArrayList<>();
         int index = 0;
-        for (UUID playerId : starting) {
-            if (index >= slotNumbers.size()) {
-                nextQueue.addFirst(playerId);
-                continue;
+        try {
+            for (UUID playerId : starting) {
+                if (index >= slotNumbers.size()) {
+                    overflow.add(playerId);
+                    continue;
+                }
+                Player player = Bukkit.getPlayer(playerId);
+                if (player == null) {
+                    continue;
+                }
+                int slotNumber = slotNumbers.get(index++);
+                Pose pose = arena.slots().get(slotNumber);
+                Racer racer = new Racer(
+                        playerId,
+                        names.getOrDefault(playerId, player.getName()),
+                        slotNumber,
+                        pose,
+                        arena.checkpoints().size(),
+                        config.trailSamples(),
+                        config.offTrackGraceTicks());
+                racers.put(playerId, racer);
+                boats.park(racer, Locations.of(world, pose), player, config.boatType());
             }
-            Player player = Bukkit.getPlayer(playerId);
-            if (player == null) {
-                continue;
+        } catch (RuntimeException ex) {
+            for (Racer racer : new ArrayList<>(racers.values())) {
+                boats.remove(racer);
             }
-            int slotNumber = slotNumbers.get(index++);
-            Pose pose = arena.slots().get(slotNumber);
-            Racer racer = new Racer(
-                    playerId,
-                    names.getOrDefault(playerId, player.getName()),
-                    slotNumber,
-                    pose,
-                    arena.checkpoints().size(),
-                    config.trailSamples(),
-                    config.offTrackGraceTicks());
-            racers.put(playerId, racer);
-            boats.park(racer, Locations.of(world, pose), player, config.boatType());
+            racers.clear();
+            Bukkit.getLogger().log(Level.SEVERE, "Could not spawn a race boat in " + arena.name(), ex);
+            tell("The race could not start because a boat failed to spawn.");
+            return;
+        }
+        queue.clear();
+        for (int overflowIndex = overflow.size() - 1; overflowIndex >= 0; overflowIndex--) {
+            nextQueue.addFirst(overflow.get(overflowIndex));
         }
         if (racers.isEmpty()) {
             becomeIdle();

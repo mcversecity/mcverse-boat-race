@@ -99,6 +99,11 @@ public final class RaceManager {
         return session(arena).forceStart();
     }
 
+    public boolean hasWaitingPlayers(Arena arena) {
+        RaceSession session = sessions.get(arena.name());
+        return session != null && session.hasWaitingPlayers();
+    }
+
     public void stop(Arena arena, String reason) {
         RaceSession session = sessions.get(arena.name());
         if (session == null || !session.busy()) {
