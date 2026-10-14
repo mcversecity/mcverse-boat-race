@@ -24,7 +24,7 @@ All setup commands need `mcvboatrace.admin` (operators have this by default). Re
 
 1. `/mcvboatrace create <arena>`
 2. `/mcvboatrace wand`
-3. Left-click one corner of a box and right-click the opposite corner. `/mcvboatrace pos1` and `/mcvboatrace pos2` do the same thing while you look at a block.
+3. Fly or stand at one corner and run `/mcvboatrace pos1`. Go to the opposite corner and run `/mcvboatrace pos2`. Both save your position, rounded up to the next whole block. The wand still uses the block you click.
 4. Stand where finishers should return and run `/mcvboatrace setspectator`.
 5. Select the stands and run `/mcvboatrace setspectatearea`. Players can only join from inside this box.
 6. Select the ice, including the air above it, and run `/mcvboatrace settrack`. The boat has to be inside this box or it counts as off track.
@@ -66,7 +66,7 @@ Each racer has one boat for the whole race. The boat is removed when they finish
 | `/mcvboatrace list` | List arenas and whether a race is running |
 | `/mcvboatrace info [arena]` | Show setup progress |
 | `/mcvboatrace wand` | Give the corner-selection wand |
-| `/mcvboatrace pos1` / `pos2` | Set a corner from the block you are looking at |
+| `/mcvboatrace pos1` / `pos2` | Set a corner to your position, rounded up to a whole block |
 | `/mcvboatrace setspectator` | Save the return point where you are standing |
 | `/mcvboatrace setspectatearea` | Save the selected box as the stands |
 | `/mcvboatrace settrack` | Save the selected box as the legal ice corridor |

@@ -11,8 +11,7 @@ import mcverse.boatrace.arena.Selection;
 import mcverse.boatrace.integration.WorldGuardArenas;
 import mcverse.boatrace.integration.WorldGuardSync;
 import mcverse.boatrace.race.Locations;
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.block.Block;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -295,20 +294,23 @@ public final class BoatRaceCommand implements CommandExecutor, TabCompleter {
         if (player == null) {
             return;
         }
-        Block block = player.getTargetBlockExact(80, FluidCollisionMode.NEVER);
-        if (block == null) {
-            player.sendMessage(Messages.error("Look at a block."));
-            return;
-        }
+        Location location = player.getLocation();
         Selection selection = plugin.selections().get(player.getUniqueId());
-        BlockPoint point = new BlockPoint(block.getX(), block.getY(), block.getZ());
+        BlockPoint point = new BlockPoint(
+                roundUpToBlock(location.getX()),
+                roundUpToBlock(location.getY()),
+                roundUpToBlock(location.getZ()));
         if (first) {
-            selection.setPos1(block.getWorld().getName(), point);
+            selection.setPos1(location.getWorld().getName(), point);
             player.sendMessage(Messages.ok("Position 1 set to " + point + "."));
         } else {
-            selection.setPos2(block.getWorld().getName(), point);
+            selection.setPos2(location.getWorld().getName(), point);
             player.sendMessage(Messages.ok("Position 2 set to " + point + "."));
         }
+    }
+
+    private static int roundUpToBlock(double value) {
+        return (int) Math.ceil(value);
     }
 
     private void setSpectator(CommandSender sender) {
